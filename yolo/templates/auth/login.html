@@ -2,28 +2,29 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>新用户注册</title>
+    <title>login</title>
 </head>
 <body>
 
-<h3>新用户注册</h3>
+<br>
+{% for message in get_flashed_messages()%}
+    {{message}}
+{% endfor %}
+<br>
 
+<h2>
+this is the auth.login page 用户登录页面
+</h2>
 
 <br>
 {% for message in form.errors%}
-   <p>{{form.errors[message]}}</p>
+    <p>{{form.errors[message]}}</p>
 {% endfor %}
 <br>
 <form method="post">
     {{ form.csrf_token }}
     <p>
-        昵称：{{form.nickname}}
-    </p>
-    <p>
         用户名：{{form.username}}
-    </p>
-    <p>
-        邮箱地址:{{form.email}}
     </p>
     <p>
         密码：{{form.password}}
@@ -32,12 +33,13 @@
         确认密码：{{form.password2}}
     </p>
     <p>
-         {{form.submit}}
+        记住我：{{ form.remember }}
     </p>
 
-
+    <p>
+         {{form.submit}}
+    </p>
 </form>
-
 
 </body>
 </html>
