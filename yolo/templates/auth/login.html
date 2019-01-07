@@ -12,9 +12,7 @@
 {% endfor %}
 <br>
 
-<h2>
-this is the auth.login page 用户登录页面
-</h2>
+<h2>用户登录</h2>
 
 <br>
 {% for message in form.errors%}
@@ -24,7 +22,7 @@ this is the auth.login page 用户登录页面
 <form method="post">
     {{ form.csrf_token }}
     <p>
-        用户名：{{form.username}}
+        邮箱：{{form.email}}
     </p>
     <p>
         密码：{{form.password}}
@@ -40,6 +38,10 @@ this is the auth.login page 用户登录页面
          {{form.submit}}
     </p>
 </form>
+
+<p><a href="{{ url_for('auth.register')}}">注册新用户</a></p>
+
+<p><a href="{{ url_for('auth.forget_password')}}">忘记密码</a></p>
 
 </body>
 </html>

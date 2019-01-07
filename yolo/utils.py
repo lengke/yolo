@@ -1,4 +1,4 @@
-from flask import current_app
+from flask import current_app, render_template
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from itsdangerous import BadSignature, SignatureExpired
 
@@ -15,7 +15,7 @@ def generate_token(user, operation, expire_in=None, **kwargs):
 	return s.dumps(data)  # 这个dumps是Serializer对象的内置方法
 
 
-def validate_token(user, token, operation):
+def validate_token(user, token, operation, new_password=None):
 	s = Serializer(current_app.config["SECRET_KEY"])
 
 	try:
@@ -28,6 +28,10 @@ def validate_token(user, token, operation):
 
 	if operation == Operations.CONFIRM:
 		user.confirmed = True
+
+	elif operation == Operations.RESET_PASSWORD:
+		user.set_password(new_password)
+
 	else:
 		return False
 
