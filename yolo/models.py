@@ -2,10 +2,19 @@ from yolo.extentions import db
 from flask_login import UserMixin
 from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
+from flask import current_app
 
 
 # 用户表
 class User(db.Model, UserMixin):
+	# 重写init方法，为用户自动分配角色
+	def __init__(self, **kwargs):
+		super(User, self).__init__(**kwargs)
+		self.set_role()
+
+	def __str__(self):
+		return "<Name={} & Class 'yolo.models.User'>".format(self.username)
+
 	id = db.Column(db.Integer, primary_key=True)
 	# 用户基本资料
 	username = db.Column(db.String(20), unique=True, index=True)  #这个字段是用户的独特身份标识
@@ -35,6 +44,25 @@ class User(db.Model, UserMixin):
 	role_id = db.Column(db.Integer, db.ForeignKey("role.id"))
 	its_role = db.relationship("Role", back_populates="its_users")
 
+	# 为每个user自动设置角色
+	# 根据邮箱地址判断是否管理员
+	def set_role(self):
+		if self.its_role is None:
+			if self.email == current_app.config["YOLO_ADMIN_EMAIL"]:
+				self.its_role = Role.query.filter_by(name="Administrator").first()
+			else:
+				self.its_role = Role.query.filter_by(name="User").first()
+			db.session.commit()
+
+	# 判断用户是否是管理员
+	@property
+	def is_admin(self):
+		return self.its_role.name == "Administrator"
+
+	# 判断用户是否具有某项权限
+	def can(self, permission_name):
+		permission = Permission.query.filter_by(name=permission_name).fist()
+		return permission is not None and self.its_role is not None and permission in self.its_role.its_permissions
 
 
 # 角色与权限多对多关系的关联表
@@ -50,8 +78,13 @@ roles_permissions = db.Table(
 
 # 角色表
 class Role(db.Model):
+
+	def __str__(self):
+		return "<Name={} & Class 'yolo.models.Role'>".format(self.name)
+
 	id = db.Column(db.Integer, primary_key=True)
 	name = db.Column(db.String(30), unique=True)
+
 	its_permissions = db.relationship("Permission", secondary=roles_permissions, back_populates="its_roles")
 	its_users = db.relationship("User", back_populates="its_role")
 
@@ -81,8 +114,13 @@ class Role(db.Model):
 
 # 权限表
 class Permission(db.Model):
+
+	def __str__(self):
+		return "<Name={} & Class 'yolo.models.Permission'>".format(self.name)
+
 	id = db.Column(db.Integer, primary_key=True)
 	name = db.Column(db.String(30), unique=True)
+
 	its_roles = db.relationship("Role", secondary=roles_permissions, back_populates="its_permissions")
 
 

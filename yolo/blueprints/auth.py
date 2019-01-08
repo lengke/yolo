@@ -143,3 +143,8 @@ def reset_password(token):
 
 	return render_template("auth/reset_password.html", form=form)
 
+
+
+
+
+

@@ -1,4 +1,5 @@
 import os
+import click
 from flask import Flask
 from yolo.blueprints.admin import admin_bp
 from yolo.blueprints.ajax import ajax_bp
@@ -7,6 +8,7 @@ from yolo.blueprints.user import user_bp
 from yolo.blueprints.auth import auth_bp
 from yolo.extentions import *
 from yolo.settings import config
+from yolo.models import Role
 
 
 # 工厂函数
@@ -20,6 +22,7 @@ def create_app(config_name=None):
 
 	register_blueprints(app)
 	register_extensions(app)
+	register_commands(app)
 
 	return app
 
@@ -44,3 +47,18 @@ def register_extensions(app):
 	dropzone.init_app(app)
 	csrf.init_app(app)
 	whooshee.init_app(app)
+
+
+# 注册click命令行命令
+def register_commands(app):
+
+	# 初始化命令
+	@app.cli.command()
+	def init():
+		click.echo("初始化数据库")
+		# db.drop_all()
+		db.create_all()
+		click.echo("初始化角色和权限表")
+		Role.init_role()
+		click.echo("初始化完成")
+
