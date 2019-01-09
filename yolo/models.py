@@ -44,6 +44,9 @@ class User(db.Model, UserMixin):
 	role_id = db.Column(db.Integer, db.ForeignKey("role.id"))
 	its_role = db.relationship("Role", back_populates="its_users")
 
+	#用户与图片的一对多关系定义
+	its_photos = db.relationship("Photo", back_populates="its_author", cascade="all")
+
 	# 为每个user自动设置角色
 	# 根据邮箱地址判断是否管理员
 	def set_role(self):
@@ -61,7 +64,7 @@ class User(db.Model, UserMixin):
 
 	# 判断用户是否具有某项权限
 	def can(self, permission_name):
-		permission = Permission.query.filter_by(name=permission_name).fist()
+		permission = Permission.query.filter_by(name=permission_name).first()
 		return permission is not None and self.its_role is not None and permission in self.its_role.its_permissions
 
 
@@ -123,5 +126,15 @@ class Permission(db.Model):
 
 	its_roles = db.relationship("Role", secondary=roles_permissions, back_populates="its_permissions")
 
-
+# 图片表
+class Photo(db.Model):
+	id = db.Column(db.Integer, primary_key=True)
+	description = db.Column(db.String(500))
+	filename = db.Column(db.String(64))
+	filename_s = db.Column(db.String(64))
+	filename_m = db.Column(db.String(64))
+	timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+	authod_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+	# 用户与图片的一对多关系定义
+	its_author = db.relationship('User', back_populates="its_photos")
 

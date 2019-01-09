@@ -1,5 +1,6 @@
 import os
 
+basedir = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
 
 class Operations:
 	CONFIRM = "confirm"
@@ -24,6 +25,23 @@ class BaseConfig():
 	MAIL_USERNAME = "20167591@qq.com"
 	MAIL_PASSWORD = os.getenv("MAIL_PASSWORD")
 	MAIL_DEFAULT_SENDER = ("20167591@qq.com")
+
+	BOOTSTRAP_SERVE_LOCAL = True
+
+	YOLO_UPLOAD_PATH = os.path.join(basedir, "uploads")
+	YOLO_PHOTO_SIZE = {"small":400, "medium":800}
+	YOLO_PHOTO_SUFFIX = {
+		YOLO_PHOTO_SIZE["small"]: "_s",
+		YOLO_PHOTO_SIZE["medium"]:"_m"
+	}
+
+
+	# flask-dropzone的配置
+	DROPZONE_ALLOWED_FILE_TYPE = 'image'
+	MAX_CONTENT_LENGTH = 3 * 1024 * 1024
+	DROPZONE_MAX_FILE_SIZE = 3
+	DROPZONE_MAX_FILES = 30
+	DROPZONE_ENABLE_CSRF = True
 
 
 class DevelopmentConfig(BaseConfig):
