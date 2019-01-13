@@ -35,6 +35,10 @@ class BaseConfig():
 		YOLO_PHOTO_SIZE["medium"]:"_m"
 	}
 
+	YOLO_PHOTO_PER_PAGE = 12
+
+	AVATARS_SAVE_PATH = os.path.join(YOLO_UPLOAD_PATH, "avatars")
+	AVATARS_SIZE_TUPLE = (30, 100, 200)
 
 	# flask-dropzone的配置
 	DROPZONE_ALLOWED_FILE_TYPE = 'image'

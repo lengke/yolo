@@ -3,6 +3,7 @@ from flask_login import UserMixin
 from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask import current_app
+from flask_avatars import Identicon
 
 
 # 用户表
@@ -11,6 +12,7 @@ class User(db.Model, UserMixin):
 	def __init__(self, **kwargs):
 		super(User, self).__init__(**kwargs)
 		self.set_role()
+		self.generate_avatar()
 
 	def __str__(self):
 		return "<Name={} & Class 'yolo.models.User'>".format(self.username)
@@ -31,6 +33,14 @@ class User(db.Model, UserMixin):
 	avator_m = db.Column(db.String(64))
 	avator_l = db.Column(db.String(64))
 	avator_raw = db.Column(db.String(64))
+
+	def generate_avatar(self):
+		avatar = Identicon()
+		filenames = avatar.generate(text=self.username)
+		self.avator_s = filenames[0]
+		self.avator_m = filenames[1]
+		self.avator_l = filenames[2]
+		db.session.commit()
 
 	# 生成用户密码hash值
 	def set_password(self,password):
